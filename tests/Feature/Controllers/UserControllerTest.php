@@ -16,4 +16,13 @@ class UserControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([]);
     }
+
+    // TODO: public function testListUsersWithRecords
+    
+    public function testCreateUser()
+    {
+        $response = $this->post('/users', ['hkid' => 'A1234']);
+
+        $response->assertStatus(201);
+    }
 }
