@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Validator;
 use App\User;
 
 class UserController extends Controller
@@ -32,6 +33,18 @@ class UserController extends Controller
     public function create(Request $req)
     {
         // validate hkid
+        $validationRules = [
+            'hkid' => 'required|unique:user',
+        ];
+        $errorMessages = [
+            'required' => 'Invalid :attribute',
+            'unique' => ':attribute has already in use',
+        ];
+        $validator = Validator::make($req->all(), $validationRules, $errorMessages);
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()->first('hkid')], 400);
+        }
+
         // create user
         $user = User::create(['hkid' => $req->hkid]);
 
