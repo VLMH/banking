@@ -11,7 +11,7 @@ class UserControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function testListUsers()
+    public function testListUsersWithNoRecords()
     {
         $response = $this->get('/users');
 
