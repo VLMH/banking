@@ -43,6 +43,16 @@ class UserControllerTest extends TestCase
         $response->assertJson(['id' => $user->id]);
     }
 
+    public function testCreateUserWithExistingHkid()
+    {
+        $hkid = 'A1234';
+        $user1 = factory(\App\User::class)->create(['hkid' => $hkid]);
+        $response = $this->post('/users', ['hkid' => $hkid]);
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'hkid has already registered']);
+    }
+
     private function assertGetUsers($expectedResponse)
     {
         $response = $this->get('/users');
