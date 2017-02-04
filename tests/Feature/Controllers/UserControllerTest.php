@@ -50,7 +50,7 @@ class UserControllerTest extends TestCase
         $response = $this->post('/users', ['hkid' => $hkid]);
 
         $response->assertStatus(400);
-        $response->assertJson(['message' => 'hkid has already registered']);
+        $response->assertJson(['message' => 'hkid has already in use']);
     }
 
     private function assertGetUsers($expectedResponse)
