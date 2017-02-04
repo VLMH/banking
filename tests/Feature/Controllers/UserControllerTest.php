@@ -14,18 +14,12 @@ class UserControllerTest extends TestCase
     public function testListUsers()
     {
         $user = factory(\App\User::class)->create();
-        $response = $this->get('/users');
-
-        $response->assertStatus(200);
-        $response->assertJson([$user->id => $user->hkid]);
+        $this->assertGetUsers([$user->id => $user->hkid]);
     }
 
     public function testListUsersWithNoRecords()
     {
-        $response = $this->get('/users');
-
-        $response->assertStatus(200);
-        $response->assertJson([]);
+        $this->assertGetUsers([]);
     }
 
     public function testCreateUser()
@@ -35,5 +29,12 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertEquals(1, \App\User::where('hkid', $hkid)->count());
+    }
+
+    private function assertGetUsers($expectedResponse)
+    {
+        $response = $this->get('/users');
+        $response->assertStatus(200);
+        $response->assertJson($expectedResponse);
     }
 }
