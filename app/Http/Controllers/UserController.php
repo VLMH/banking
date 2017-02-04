@@ -33,6 +33,9 @@ class UserController extends Controller
     {
         // validate hkid
         // create user
+        $user = User::create(['hkid' => $req->hkid]);
+
         // response with userId
+        return response(['id' => $user->id], 201);
     }
 }
