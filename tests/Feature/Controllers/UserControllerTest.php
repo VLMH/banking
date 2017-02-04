@@ -32,7 +32,8 @@ class UserControllerTest extends TestCase
         $response = $this->post('/users', ['hkid' => $hkid]);
 
         $response->assertStatus(201);
-        $this->assertEquals(1, \App\User::where('hkid', $hkid)->count());
+        $user = \App\User::where('hkid', $hkid)->first();
+        $response->assertJson(['id' => $user->id]);
     }
 
     private function assertGetUsers($expectedResponse)
