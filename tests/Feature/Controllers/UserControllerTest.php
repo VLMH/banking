@@ -23,8 +23,10 @@ class UserControllerTest extends TestCase
     
     public function testCreateUser()
     {
-        $response = $this->post('/users', ['hkid' => 'A1234']);
+        $hkid = 'A1234';
+        $response = $this->post('/users', ['hkid' => $hkid]);
 
         $response->assertStatus(201);
+        $this->assertEquals(1, \App\User::where('hkid', $hkid)->count());
     }
 }
