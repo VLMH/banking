@@ -9,6 +9,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UserControllerTest extends TestCase
 {
+    use DatabaseMigrations;
+
     public function testListUsers()
     {
         $response = $this->get('/users');
