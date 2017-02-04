@@ -11,6 +11,15 @@ class UserControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
+    public function testListUsers()
+    {
+        $user = factory(\App\User::class)->create();
+        $response = $this->get('/users');
+
+        $response->assertStatus(200);
+        $response->assertJson([$user->id => $user->hkid]);
+    }
+
     public function testListUsersWithNoRecords()
     {
         $response = $this->get('/users');
@@ -19,8 +28,6 @@ class UserControllerTest extends TestCase
         $response->assertJson([]);
     }
 
-    // TODO: public function testListUsersWithRecords
-    
     public function testCreateUser()
     {
         $hkid = 'A1234';
