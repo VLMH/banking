@@ -11,6 +11,8 @@ class UserControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
+    // === GET /users
+
     public function testListUsers()
     {
         $user = factory(\App\User::class)->create();
@@ -21,6 +23,8 @@ class UserControllerTest extends TestCase
     {
         $this->assertGetUsers([]);
     }
+
+    // === POST /users
 
     public function testCreateUser()
     {
