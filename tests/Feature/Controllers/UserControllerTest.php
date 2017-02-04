@@ -24,6 +24,13 @@ class UserControllerTest extends TestCase
         $this->assertGetUsers([]);
     }
 
+    public function testListUsersWithMulitpleRecords()
+    {
+        $user1 = factory(\App\User::class)->create();
+        $user2 = factory(\App\User::class)->create(['hkid' => 'B6789']);
+        $this->assertGetUsers([$user1->id => $user1->hkid, $user2->id => $user2->hkid]);
+    }
+
     // === POST /users
 
     public function testCreateUser()
