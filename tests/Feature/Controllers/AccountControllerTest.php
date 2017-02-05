@@ -134,6 +134,17 @@ class AccountControllerTest extends TestCase
         $this->assertNotNull(Account::onlyTrashed()->where('id', $account->id)->first());
     }
 
+    public function testDeleteAccountWithUserNotFound()
+    {
+        $this->assertUserNotFound($this->delete("/users/999/accounts/999"));
+    }
+
+    public function testDeleteAccountWithAccountNotFound()
+    {
+        $user = factory(\App\User::class)->create();
+        $this->assertAccountNotFound($this->delete("/users/{$user->id}/accounts/999"));
+    }
+
     private function assertUserNotFound($response)
     {
         $this->assertNotFoundResponse($response, 'User not found');
