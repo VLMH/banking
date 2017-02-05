@@ -54,6 +54,11 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    public function testListAccountsWithUserNotFound()
+    {
+        $this->assertUserNotFound($this->get("/users/999/accounts"));
+    }
+
     // === POST /users/{id}/accounts
 
     public function testCreateAccount()
@@ -65,5 +70,16 @@ class AccountControllerTest extends TestCase
         $accounts = $user->accounts();
         $this->assertEquals(1, $accounts->count());
         $response->assertJson(['id' => $accounts->first()->id]);
+    }
+
+    public function testCreateAccountWithUserNotFound()
+    {
+        $this->assertUserNotFound($this->post("/users/999/accounts"));
+    }
+
+    private function assertUserNotFound($response)
+    {
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'User not found']);
     }
 }
