@@ -53,4 +53,17 @@ class AccountControllerTest extends TestCase
             'accounts' => $accounts->pluck('id')->toArray(),
         ]);
     }
+
+    // === POST /users/{id}/accounts
+
+    public function testCreateAccount()
+    {
+        $user = factory(\App\User::class)->create();
+        $response = $this->post("/users/{$user->id}/accounts");
+
+        $response->assertStatus(201);
+        $accounts = $user->accounts();
+        $this->assertEquals(1, $accounts->count());
+        $response->assertJson(['id' => $accounts->first()->id]);
+    }
 }
