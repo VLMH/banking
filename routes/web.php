@@ -7,6 +7,7 @@ Route::get('/users/{userId}/accounts', 'AccountController@index');
 Route::get('/users/{userId}/accounts/{accountId}', 'AccountController@show');
 Route::post('/users/{userId}/accounts', 'AccountController@create');
 Route::delete('/users/{userId}/accounts/{accountId}', 'AccountController@destroy');
+Route::post('/users/{userId}/accounts/{accountId}/deposit', 'AccountController@deposit');
 
 Route::get('/', function () {
     return [

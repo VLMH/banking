@@ -22,4 +22,15 @@ class Account extends Model
     {
         return $this->balance / self::CURRENCY_MINOR_UNIT;
     }
+
+    public function deposit($amount)
+    {
+        $this->attributes['balance'] += $this->toMinorUnit($amount);
+        return $this;
+    }
+
+    private function toMinorUnit($number)
+    {
+        return (int)floor($number * self::CURRENCY_MINOR_UNIT);
+    }
 }

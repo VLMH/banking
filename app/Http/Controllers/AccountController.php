@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Validator;
+
 use App\User;
 use App\Account;
 
@@ -43,7 +45,7 @@ class AccountController extends Controller
 
         // find account
         if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
-            return response(['message' => 'Account not found'], 404);
+            return $this->responseAccountNotFound();
         }
 
         // response
@@ -72,8 +74,8 @@ class AccountController extends Controller
     }
 
     /**
-     * GET /users/{userId}/accounts/{accountId}
-     * Retrieve an account with balance
+     * DELETE /users/{userId}/accounts/{accountId}
+     * Close an account
      */
     public function destroy(Request $req)
     {
@@ -84,7 +86,7 @@ class AccountController extends Controller
 
         // find account
         if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
-            return response(['message' => 'Account not found'], 404);
+            return $this->responseAccountNotFound();
         }
 
         $account->delete();
@@ -93,8 +95,48 @@ class AccountController extends Controller
         return response(null, 200);
     }
 
+    /**
+     * POST /users/{userId}/accounts/{accountId}/deposit
+     * Account deposit
+     */
+    public function deposit(Request $req)
+    {
+        // validation
+        $validationRules = [
+            'amount' => 'required|numeric|min:0.01',
+        ];
+        $errorMessages = [
+            'required' => 'Invalid :attribute',
+            'numeric'  => ':attribute must be a number',
+            'min'      => ':attribute must greater than :min'
+        ];
+        $validator = Validator::make($req->all(), $validationRules, $errorMessages);
+        if ($validator->fails()) {
+            return response(['message' => $validator->errors()->first('amount')], 400);
+        }
+
+        // find user
+        if (!$user = User::find($req->userId)) {
+            return $this->responseUserNotFound();
+        }
+
+        // find account
+        if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
+            return $this->responseAccountNotFound();
+        }
+
+        $account->deposit($req->amount)->save();
+
+        return response(null, 200);
+    }
+
     private function responseUserNotFound()
     {
         return response(['message' => 'User not found'], 404);
+    }
+
+    private function responseAccountNotFound()
+    {
+        return response(['message' => 'Account not found'], 404);
     }
 }

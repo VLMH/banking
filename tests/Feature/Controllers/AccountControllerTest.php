@@ -145,6 +145,69 @@ class AccountControllerTest extends TestCase
         $this->assertAccountNotFound($this->delete("/users/{$user->id}/accounts/999"));
     }
 
+    // === POST /users/{id}/accounts/{accountId}/deposit
+
+    public function testAccountDeposit()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 100.00]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(200.00, $account->fresh()->balance());
+    }
+
+    public function testAccountDepositWithCents()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 123.45]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(223.45, $account->fresh()->balance());
+    }
+
+    public function testAccountDepositWithoutAmount()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit");
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'Invalid amount']);
+    }
+
+    public function testAccountDepositWithAmountIsNaN()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 'abc']);
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'amount must be a number']);
+    }
+
+    public function testAccountDepositWithAmountIsLessThanZero()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => -1.23]);
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'amount must greater than 0.01']);
+    }
+
+    public function testAccountDepositWithUserNotFound()
+    {
+        $this->assertUserNotFound($this->post("/users/999/accounts/999/deposit", ['amount' => 100.00]));
+    }
+
+    public function testAccountDepositWithAccountNotFound()
+    {
+        $user = factory(\App\User::class)->create();
+        $this->assertAccountNotFound($this->post("/users/{$user->id}/accounts/999/deposit", ['amount' => 100.00]));
+    }
+
     private function assertUserNotFound($response)
     {
         $this->assertNotFoundResponse($response, 'User not found');
