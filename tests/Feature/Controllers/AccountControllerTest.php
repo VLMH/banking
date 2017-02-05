@@ -56,6 +56,23 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    public function testListAccountsWithoutClosedAccount()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $closedAccount = factory(\App\Account::class)
+            ->create(['user_id' => $user->id])
+            ->delete();
+        $response = $this->get("/users/{$user->id}/accounts");
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'id'       => $user->id,
+            'hkid'     => $user->hkid,
+            'accounts' => [$account->id],
+        ]);
+    }
+
     public function testListAccountsWithUserNotFound()
     {
         $this->assertUserNotFound($this->get("/users/999/accounts"));
