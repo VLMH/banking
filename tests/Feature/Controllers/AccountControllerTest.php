@@ -1,0 +1,29 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+
+class AccountControllerTest extends TestCase
+{
+    use DatabaseMigrations;
+
+    // === GET /users/{id}/accounts
+
+    public function testListAccounts()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->get("/users/{$user->id}/accounts");
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'id'       => $user->id,
+            'hkid'     => $user->hkid,
+            'accounts' => [$account->id],
+        ]);
+    }
+}
