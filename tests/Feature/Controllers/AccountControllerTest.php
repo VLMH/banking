@@ -74,6 +74,11 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
+    public function testGetAccountWithUserNotFound()
+    {
+        $this->assertUserNotFound($this->get("/users/999/accounts/999"));
+    }
+
     // === POST /users/{id}/accounts
 
     public function testCreateAccount()
@@ -94,7 +99,7 @@ class AccountControllerTest extends TestCase
 
     private function assertUserNotFound($response)
     {
-        $response->assertStatus(400);
+        $response->assertStatus(404);
         $response->assertJson(['message' => 'User not found']);
     }
 }

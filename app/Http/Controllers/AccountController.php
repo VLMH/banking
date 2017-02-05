@@ -17,7 +17,7 @@ class AccountController extends Controller
     {
         // find user with active accounts
         if (!$user = User::find($req->userId)) {
-            return response(['message' => 'User not found'], 400);
+            return $this->responseUserNotFound();
         }
         $accounts = $user->activeAccounts()->get();
 
@@ -38,7 +38,7 @@ class AccountController extends Controller
     {
         // find user
         if (!$user = User::find($req->userId)) {
-            return response(['message' => 'User not found'], 400);
+            return $this->responseUserNotFound();
         }
 
         // find account
@@ -61,7 +61,7 @@ class AccountController extends Controller
     {
         // find user
         if (!$user = User::find($req->userId)) {
-            return response(['message' => 'User not found'], 400);
+            return $this->responseUserNotFound();
         }
 
         // create account
@@ -69,5 +69,10 @@ class AccountController extends Controller
 
         // response
         return response(['id' => $account->id], 201);
+    }
+
+    private function responseUserNotFound()
+    {
+        return response(['message' => 'User not found'], 404);
     }
 }
