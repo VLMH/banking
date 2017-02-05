@@ -26,4 +26,31 @@ class AccountControllerTest extends TestCase
             'accounts' => [$account->id],
         ]);
     }
+
+    public function testListAccountsWithNoRecords()
+    {
+        $user = factory(\App\User::class)->create();
+        $response = $this->get("/users/{$user->id}/accounts");
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'id'       => $user->id,
+            'hkid'     => $user->hkid,
+            'accounts' => [],
+        ]);
+    }
+
+    public function testListAccountsWithMultipleRecords()
+    {
+        $user = factory(\App\User::class)->create();
+        $accounts = factory(\App\Account::class, 3)->create(['user_id' => $user->id]);
+        $response = $this->get("/users/{$user->id}/accounts");
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'id'       => $user->id,
+            'hkid'     => $user->hkid,
+            'accounts' => $accounts->pluck('id')->toArray(),
+        ]);
+    }
 }
