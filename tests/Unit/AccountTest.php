@@ -13,12 +13,12 @@ class AccountTest extends TestCase
     public function testBalance()
     {
         $account = factory(Account::class)->make();
-        $this->assertEquals('$100.00', $account->fmtBalance());
+        $this->assertEquals(100, $account->balance());
     }
 
     public function testBalanceWithCents()
     {
         $account = factory(Account::class)->make(['balance' => 1234567]);
-        $this->assertEquals('$12,345.67', $account->fmtBalance());
+        $this->assertEquals(12345.67, $account->balance());
     }
 }

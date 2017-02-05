@@ -15,8 +15,8 @@ class Account extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function fmtBalance()
+    public function balance()
     {
-        return '$' . number_format($this->balance / self::CURRENCY_MINOR_UNIT, 2);
+        return $this->balance / self::CURRENCY_MINOR_UNIT;
     }
 }
