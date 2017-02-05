@@ -71,6 +71,28 @@ class AccountController extends Controller
         return response(['id' => $account->id], 201);
     }
 
+    /**
+     * GET /users/{userId}/accounts/{accountId}
+     * Retrieve an account with balance
+     */
+    public function destroy(Request $req)
+    {
+        // find user
+        if (!$user = User::find($req->userId)) {
+            return $this->responseUserNotFound();
+        }
+
+        // find account
+        if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
+            return response(['message' => 'Account not found'], 404);
+        }
+
+        $account->delete();
+
+        // response
+        return response(null, 200);
+    }
+
     private function responseUserNotFound()
     {
         return response(['message' => 'User not found'], 404);
