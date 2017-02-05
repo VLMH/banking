@@ -13,9 +13,4 @@ class User extends Model
     {
         return $this->hasMany('App\Account');
     }
-
-    public function activeAccounts()
-    {
-        return $this->accounts()->whereNull('deleted_at');
-    }
 }

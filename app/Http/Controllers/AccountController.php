@@ -19,7 +19,7 @@ class AccountController extends Controller
         if (!$user = User::find($req->userId)) {
             return $this->responseUserNotFound();
         }
-        $accounts = $user->activeAccounts()->get();
+        $accounts = $user->accounts()->get();
 
         // response
         $resp = [
