@@ -34,7 +34,7 @@ class AccountController extends Controller
      * GET /users/{userId}/accounts/{accountId}
      * Retrieve an account with balance
      */
-    public function get(Request $req)
+    public function show(Request $req)
     {
         // find user
         if (!$user = User::find($req->userId)) {
