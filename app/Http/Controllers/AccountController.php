@@ -10,7 +10,7 @@ use App\Account;
 class AccountController extends Controller
 {
     /**
-     * GET /users/{id}/accounts
+     * GET /users/{userId}/accounts
      * List out accounts of a user
      */
     public function index(Request $req)
@@ -28,6 +28,29 @@ class AccountController extends Controller
             'accounts' => $accounts->pluck('id'),
         ];
         return response($resp, 200);
+    }
+
+    /**
+     * GET /users/{userId}/accounts/{accountId}
+     * Retrieve an account with balance
+     */
+    public function get(Request $req)
+    {
+        // find user
+        if (!$user = User::find($req->userId)) {
+            return response(['message' => 'User not found'], 400);
+        }
+
+        // find account
+        if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
+            return response(['message' => 'Account not found'], 400);
+        }
+
+        // response
+        return response([
+            'id' => $account->id,
+            'balance' => '$' . number_format($account->balance(), 2),
+        ], 200);
     }
 
     /**

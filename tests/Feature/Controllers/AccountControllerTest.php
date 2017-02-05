@@ -65,10 +65,13 @@ class AccountControllerTest extends TestCase
     {
         $user = factory(\App\User::class)->create();
         $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $response = $this->post("/users/{$user->id}/accounts/{$account->id}");
+        $response = $this->get("/users/{$user->id}/accounts/{$account->id}");
 
         $response->assertStatus(200);
-        $response->assertJson(['id' => $account->id, 'balance' => $account->fmtBalance()]);
+        $response->assertJson([
+            'id' => $account->id,
+            'balance' => '$' . number_format($account->balance(), 2),
+        ]);
     }
 
     // === POST /users/{id}/accounts
