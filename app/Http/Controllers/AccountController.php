@@ -43,7 +43,7 @@ class AccountController extends Controller
 
         // find account
         if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
-            return response(['message' => 'Account not found'], 400);
+            return response(['message' => 'Account not found'], 404);
         }
 
         // response
