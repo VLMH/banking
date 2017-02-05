@@ -27,4 +27,20 @@ class AccountController extends Controller
         ];
         return response($resp, 200);
     }
+
+    /**
+     * POST /users/{id}/accounts
+     * Create account for a user
+     */
+    public function create(Request $req)
+    {
+        // find user
+        $user = User::find($req->userId);
+
+        // create account
+        $account = $user->accounts()->create([]);
+
+        // response
+        return response(['id' => $account->id], 201);
+    }
 }

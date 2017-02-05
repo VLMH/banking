@@ -4,6 +4,7 @@ Route::get('/users', 'UserController@index');
 Route::post('/users', 'UserController@create');
 
 Route::get('/users/{userId}/accounts', 'AccountController@index');
+Route::post('/users/{userId}/accounts', 'AccountController@create');
 
 Route::get('/', function () {
     return [
