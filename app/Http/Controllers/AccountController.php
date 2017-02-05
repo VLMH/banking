@@ -16,7 +16,9 @@ class AccountController extends Controller
     public function index(Request $req)
     {
         // find user with active accounts
-        $user = User::find($req->userId);
+        if (!$user = User::find($req->userId)) {
+            return response(['message' => 'User not found'], 400);
+        }
         $accounts = $user->activeAccounts()->get();
 
         // response
@@ -35,7 +37,9 @@ class AccountController extends Controller
     public function create(Request $req)
     {
         // find user
-        $user = User::find($req->userId);
+        if (!$user = User::find($req->userId)) {
+            return response(['message' => 'User not found'], 400);
+        }
 
         // create account
         $account = $user->accounts()->create([]);
