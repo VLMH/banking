@@ -103,6 +103,18 @@ class AccountControllerTest extends TestCase
         $this->assertUserNotFound($this->post("/users/999/accounts"));
     }
 
+    // === DELETE /users/{id}/accounts/{accountId}
+
+    public function testDeleteAccount()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->delete("/users/{$user->id}/accounts/{$account->id}");
+
+        $response->assertStatus(200);
+        $this->assertNotNull(Account::find($account->id)->deleted_at);
+    }
+
     private function assertUserNotFound($response)
     {
         $this->assertNotFoundResponse($response, 'User not found');
