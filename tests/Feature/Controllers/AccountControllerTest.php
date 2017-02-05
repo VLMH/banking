@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
+use App\Account;
+
 class AccountControllerTest extends TestCase
 {
     use DatabaseMigrations;
@@ -112,7 +114,7 @@ class AccountControllerTest extends TestCase
         $response = $this->delete("/users/{$user->id}/accounts/{$account->id}");
 
         $response->assertStatus(200);
-        $this->assertNotNull(Account::find($account->id)->deleted_at);
+        $this->assertNotNull(Account::onlyTrashed()->where('id', $account->id)->first());
     }
 
     private function assertUserNotFound($response)
