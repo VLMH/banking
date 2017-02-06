@@ -20,7 +20,7 @@ class Account extends Model
 
     public function getBalanceAttribute()
     {
-        return $this->attributes['balance'] / self::CURRENCY_MINOR_UNIT;
+        return $this->toCurrencyUnit($this->attributes['balance']);
     }
 
     public function deposit($amount)
@@ -37,5 +37,10 @@ class Account extends Model
     private function toMinorUnit($number)
     {
         return (int)floor($number * self::CURRENCY_MINOR_UNIT);
+    }
+
+    private function toCurrencyUnit($number)
+    {
+        return (float)($number / self::CURRENCY_MINOR_UNIT);
     }
 }
