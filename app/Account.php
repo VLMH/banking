@@ -34,6 +34,15 @@ class Account extends Model
         return $this->attributes['balance'] >= $this->toMinorUnit($amount);
     }
 
+    public function withdraw($amount)
+    {
+        if (!$this->canWithdraw($amount)) {
+            throw new \Exception('Not enough balance');
+        }
+
+        return $this->deposit(-$amount);
+    }
+
     private function toMinorUnit($number)
     {
         return (int)floor($number * self::CURRENCY_MINOR_UNIT);
