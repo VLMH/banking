@@ -47,16 +47,12 @@ class UserControllerTest extends TestCase
     {
         $hkid = 'A1234';
         $user1 = factory(\App\User::class)->create(['hkid' => $hkid]);
-        $this->assertCreateUserError(
-            ['hkid' => $hkid],
-            400,
-            ['message' => 'hkid has already in use']
-        );
+        $this->assertCreateUserError(['hkid' => $hkid]);
     }
 
     public function testCreateUserWithMissingHkid()
     {
-        $this->assertCreateUserError([], 400, ['message' => 'Invalid hkid']);
+        $this->assertCreateUserError([]);
     }
 
     private function assertGetUsers($expectedResponse)
@@ -66,10 +62,9 @@ class UserControllerTest extends TestCase
         $response->assertJson($expectedResponse);
     }
 
-    private function assertCreateUserError($requestBody, $code, $expectedResponse)
+    private function assertCreateUserError($requestBody)
     {
         $response = $this->post('/users', $requestBody);
-        $response->assertStatus($code);
-        $response->assertJson($expectedResponse);
+        $response->assertStatus(400);
     }
 }

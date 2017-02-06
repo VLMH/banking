@@ -33,16 +33,9 @@ class UserController extends Controller
     public function create(Request $req)
     {
         // validate hkid
-        $validationRules = [
-            'hkid' => 'required|unique:user',
-        ];
-        $errorMessages = [
-            'required' => 'Invalid :attribute',
-            'unique' => ':attribute has already in use',
-        ];
-        $validator = Validator::make($req->all(), $validationRules, $errorMessages);
+        $validator = Validator::make($req->all(), ['hkid' => 'required|unique:user']);
         if ($validator->fails()) {
-            return response(['message' => $validator->errors()->first('hkid')], 400);
+            return abort(400);
         }
 
         // create user
