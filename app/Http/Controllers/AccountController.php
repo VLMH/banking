@@ -91,14 +91,4 @@ class AccountController extends Controller
 
         return response(null, 200);
     }
-
-    private function responseUserNotFound()
-    {
-        return response(['message' => 'User not found'], 404);
-    }
-
-    private function responseAccountNotFound()
-    {
-        return response(['message' => 'Account not found'], 404);
-    }
 }
