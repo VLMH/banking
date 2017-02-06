@@ -83,4 +83,25 @@ class AccountController extends Controller
 
         return response(null, 200);
     }
+
+    /**
+     * POST /users/{userId}/accounts/{accountId}/withdraw
+     * Account withdraw
+     */
+    public function withdraw(Request $req, User $user, Account $account)
+    {
+        // validation
+        $validator = Validator::make($req->all(), ['amount' => 'required|numeric|min:0.01']);
+        if ($validator->fails()) {
+            abort(400);
+        }
+
+        if (!$account->canWithdraw($req->amount)) {
+            return response()->json(['message' => 'Not enough balance'], 400);
+        }
+
+        $account->withdraw($req->amount)->save();
+
+        return response(null, 200);
+    }
 }

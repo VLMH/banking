@@ -196,4 +196,26 @@ class AccountControllerTest extends TestCase
         $user = factory(\App\User::class)->create();
         $this->post("/users/{$user->id}/accounts/999/deposit", ['amount' => 100.00])->assertStatus(404);
     }
+
+    // === POST /users/{id}/accounts/{accountId}/withdraw
+
+    public function testAccountWithdraw()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/withdraw", ['amount' => 50.00]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(50.00, $account->fresh()->balance);
+    }
+
+    public function testAccountWithdrawWithNotEnoughBalance()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/withdraw", ['amount' => 200.00]);
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'Not enough balance']);
+    }
 }
