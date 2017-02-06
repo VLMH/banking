@@ -173,15 +173,15 @@ class AccountControllerTest extends TestCase
         $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
 
         $basePath = "/users/{$user->id}/accounts/{$account->id}";
-        $paths = ["{$basePath}/deposit"];
+        $actions = ["deposit", "withdraw"];
         $invalidAmountParams = [
             [],
             ['amount' => 'abc'],
             ['amount' => -1.23],
         ];
-        foreach ($paths as $path) {
+        foreach ($actions as $action) {
             foreach ($invalidAmountParams as $param) {
-                $this->post($path, $param)->assertStatus(400);
+                $this->post("{$basePath}/{$action}", $param)->assertStatus(400);
             }
         }
     }
