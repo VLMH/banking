@@ -12,15 +12,12 @@ use App\Account;
 class AccountController extends Controller
 {
     /**
-     * GET /users/{userId}/accounts
+     * GET /users/{user}/accounts
      * List out accounts of a user
      */
-    public function index(Request $req)
+    public function index(Request $req, User $user)
     {
         // find user with active accounts
-        if (!$user = User::find($req->userId)) {
-            return $this->responseUserNotFound();
-        }
         $accounts = $user->accounts()->get();
 
         // response
@@ -36,18 +33,8 @@ class AccountController extends Controller
      * GET /users/{userId}/accounts/{accountId}
      * Retrieve an account with balance
      */
-    public function show(Request $req)
+    public function show(Request $req, User $user, Account $account)
     {
-        // find user
-        if (!$user = User::find($req->userId)) {
-            return $this->responseUserNotFound();
-        }
-
-        // find account
-        if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
-            return $this->responseAccountNotFound();
-        }
-
         // response
         return response([
             'id' => $account->id,
@@ -59,13 +46,8 @@ class AccountController extends Controller
      * POST /users/{id}/accounts
      * Create account for a user
      */
-    public function create(Request $req)
+    public function create(Request $req, User $user)
     {
-        // find user
-        if (!$user = User::find($req->userId)) {
-            return $this->responseUserNotFound();
-        }
-
         // create account
         $account = $user->accounts()->create([]);
 
@@ -77,18 +59,8 @@ class AccountController extends Controller
      * DELETE /users/{userId}/accounts/{accountId}
      * Close an account
      */
-    public function destroy(Request $req)
+    public function destroy(Request $req, User $user, Account $account)
     {
-        // find user
-        if (!$user = User::find($req->userId)) {
-            return $this->responseUserNotFound();
-        }
-
-        // find account
-        if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
-            return $this->responseAccountNotFound();
-        }
-
         $account->delete();
 
         // response
@@ -99,7 +71,7 @@ class AccountController extends Controller
      * POST /users/{userId}/accounts/{accountId}/deposit
      * Account deposit
      */
-    public function deposit(Request $req)
+    public function deposit(Request $req, User $user, Account $account)
     {
         // validation
         $validationRules = [
@@ -113,16 +85,6 @@ class AccountController extends Controller
         $validator = Validator::make($req->all(), $validationRules, $errorMessages);
         if ($validator->fails()) {
             return response(['message' => $validator->errors()->first('amount')], 400);
-        }
-
-        // find user
-        if (!$user = User::find($req->userId)) {
-            return $this->responseUserNotFound();
-        }
-
-        // find account
-        if (!$account = $user->accounts()->where('id', $req->accountId)->first()) {
-            return $this->responseAccountNotFound();
         }
 
         $account->deposit($req->amount)->save();

@@ -3,11 +3,11 @@
 Route::get('/users', 'UserController@index');
 Route::post('/users', 'UserController@create');
 
-Route::get('/users/{userId}/accounts', 'AccountController@index');
-Route::get('/users/{userId}/accounts/{accountId}', 'AccountController@show');
-Route::post('/users/{userId}/accounts', 'AccountController@create');
-Route::delete('/users/{userId}/accounts/{accountId}', 'AccountController@destroy');
-Route::post('/users/{userId}/accounts/{accountId}/deposit', 'AccountController@deposit');
+Route::get('/users/{user}/accounts', 'AccountController@index');
+Route::get('/users/{user}/accounts/{account}', 'AccountController@show');
+Route::post('/users/{user}/accounts', 'AccountController@create');
+Route::delete('/users/{user}/accounts/{account}', 'AccountController@destroy');
+Route::post('/users/{user}/accounts/{account}/deposit', 'AccountController@deposit');
 
 Route::get('/', function () {
     return [

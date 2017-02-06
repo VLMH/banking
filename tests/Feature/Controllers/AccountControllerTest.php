@@ -75,12 +75,12 @@ class AccountControllerTest extends TestCase
 
     public function testListAccountsWithUserNotFound()
     {
-        $this->assertUserNotFound($this->get("/users/999/accounts"));
+        $this->get("/users/999/accounts")->assertStatus(404);
     }
 
     // === GET /users/{id}/accounts/{accountId}
 
-    public function testGetAccount()
+    public function testShowAccount()
     {
         $user = factory(\App\User::class)->create();
         $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
@@ -93,15 +93,15 @@ class AccountControllerTest extends TestCase
         ]);
     }
 
-    public function testGetAccountWithUserNotFound()
+    public function testShowAccountWithUserNotFound()
     {
-        $this->assertUserNotFound($this->get("/users/999/accounts/999"));
+        $this->get("/users/999/accounts/999")->assertStatus(404);
     }
 
-    public function testGetAccountWithAccountNotFound()
+    public function testShowAccountWithAccountNotFound()
     {
         $user = factory(\App\User::class)->create();
-        $this->assertAccountNotFound($this->get("/users/{$user->id}/accounts/999"));
+        $this->get("/users/{$user->id}/accounts/999")->assertStatus(404);
     }
 
     // === POST /users/{id}/accounts
@@ -119,7 +119,7 @@ class AccountControllerTest extends TestCase
 
     public function testCreateAccountWithUserNotFound()
     {
-        $this->assertUserNotFound($this->post("/users/999/accounts"));
+        $this->post("/users/999/accounts")->assertStatus(404);
     }
 
     // === DELETE /users/{id}/accounts/{accountId}
@@ -136,13 +136,13 @@ class AccountControllerTest extends TestCase
 
     public function testDeleteAccountWithUserNotFound()
     {
-        $this->assertUserNotFound($this->delete("/users/999/accounts/999"));
+        $this->delete("/users/999/accounts/999")->assertStatus(404);
     }
 
     public function testDeleteAccountWithAccountNotFound()
     {
         $user = factory(\App\User::class)->create();
-        $this->assertAccountNotFound($this->delete("/users/{$user->id}/accounts/999"));
+        $this->delete("/users/{$user->id}/accounts/999")->assertStatus(404);
     }
 
     // === POST /users/{id}/accounts/{accountId}/deposit
@@ -199,28 +199,12 @@ class AccountControllerTest extends TestCase
 
     public function testAccountDepositWithUserNotFound()
     {
-        $this->assertUserNotFound($this->post("/users/999/accounts/999/deposit", ['amount' => 100.00]));
+        $this->post("/users/999/accounts/999/deposit", ['amount' => 100.00])->assertStatus(404);
     }
 
     public function testAccountDepositWithAccountNotFound()
     {
         $user = factory(\App\User::class)->create();
-        $this->assertAccountNotFound($this->post("/users/{$user->id}/accounts/999/deposit", ['amount' => 100.00]));
-    }
-
-    private function assertUserNotFound($response)
-    {
-        $this->assertNotFoundResponse($response, 'User not found');
-    }
-
-    private function assertAccountNotFound($response)
-    {
-        $this->assertNotFoundResponse($response, 'Account not found');
-    }
-
-    private function assertNotFoundResponse($response, $message)
-    {
-        $response->assertStatus(404);
-        $response->assertJson(['message' => $message]);
+        $this->post("/users/{$user->id}/accounts/999/deposit", ['amount' => 100.00])->assertStatus(404);
     }
 }
