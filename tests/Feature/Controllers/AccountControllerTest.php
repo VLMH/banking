@@ -218,4 +218,15 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(400);
         $response->assertJson(['message' => 'Not enough balance']);
     }
+
+    public function testAccountWithdrawWithUserNotFound()
+    {
+        $this->post("/users/999/accounts/999/withdraw", ['amount' => 100.00])->assertStatus(404);
+    }
+
+    public function testAccountWithdrawWithAccountNotFound()
+    {
+        $user = factory(\App\User::class)->create();
+        $this->post("/users/{$user->id}/accounts/999/withdraw", ['amount' => 100.00])->assertStatus(404);
+    }
 }
