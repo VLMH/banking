@@ -169,23 +169,17 @@ class AccountControllerTest extends TestCase
 
     public function testAccountDepositWithoutAmount()
     {
-        $user = factory(\App\User::class)->create();
-        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $this->post("/users/{$user->id}/accounts/{$account->id}/deposit")->assertStatus(400);
+        $this->assertInvalidAmount('deposit', []);
     }
 
     public function testAccountDepositWithAmountIsNaN()
     {
-        $user = factory(\App\User::class)->create();
-        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 'abc'])->assertStatus(400);
+        $this->assertInvalidAmount('deposit', ['amount' => 'abc']);
     }
 
     public function testAccountDepositWithAmountIsLessThanZero()
     {
-        $user = factory(\App\User::class)->create();
-        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => -1.23])->assertStatus(400);
+        $this->assertInvalidAmount('deposit', ['amount' => -1.23]);
     }
 
     public function testAccountDepositWithUserNotFound()
@@ -197,5 +191,12 @@ class AccountControllerTest extends TestCase
     {
         $user = factory(\App\User::class)->create();
         $this->post("/users/{$user->id}/accounts/999/deposit", ['amount' => 100.00])->assertStatus(404);
+    }
+
+    private function assertInvalidAmount($action, $param)
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $this->post("/users/{$user->id}/accounts/{$account->id}/{$action}", $param)->assertStatus(400);
     }
 }
