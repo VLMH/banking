@@ -18,9 +18,9 @@ class Account extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function balance()
+    public function getBalanceAttribute()
     {
-        return $this->balance / self::CURRENCY_MINOR_UNIT;
+        return $this->attributes['balance'] / self::CURRENCY_MINOR_UNIT;
     }
 
     public function deposit($amount)
