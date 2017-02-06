@@ -20,4 +20,16 @@ class AccountTest extends TestCase
         $account = factory(Account::class)->make();
         $this->assertEquals(223.45, $account->deposit(123.45)->balance);
     }
+
+    public function testCanWithdraw()
+    {
+        $account = factory(Account::class)->make();
+        $this->assertTrue($account->canWithdraw(50));
+    }
+
+    public function testCanWithdrawWithAmountExceedBalance()
+    {
+        $account = factory(Account::class)->make();
+        $this->assertFalse($account->canWithdraw(200));
+    }
 }

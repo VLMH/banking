@@ -29,6 +29,11 @@ class Account extends Model
         return $this;
     }
 
+    public function canWithdraw($amount)
+    {
+        return $this->attributes['balance'] >= $this->toMinorUnit($amount);
+    }
+
     private function toMinorUnit($number)
     {
         return (int)floor($number * self::CURRENCY_MINOR_UNIT);
