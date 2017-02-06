@@ -89,7 +89,7 @@ class AccountControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'id' => $account->id,
-            'balance' => '$' . number_format($account->balance(), 2),
+            'balance' => '$' . number_format($account->balance, 2),
         ]);
     }
 
@@ -154,7 +154,7 @@ class AccountControllerTest extends TestCase
         $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 100.00]);
 
         $response->assertStatus(200);
-        $this->assertEquals(200.00, $account->fresh()->balance());
+        $this->assertEquals(200.00, $account->fresh()->balance);
     }
 
     public function testAccountDepositWithCents()
@@ -164,7 +164,7 @@ class AccountControllerTest extends TestCase
         $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 123.45]);
 
         $response->assertStatus(200);
-        $this->assertEquals(223.45, $account->fresh()->balance());
+        $this->assertEquals(223.45, $account->fresh()->balance);
     }
 
     public function testInvalidAmount()

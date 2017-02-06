@@ -38,7 +38,7 @@ class AccountController extends Controller
         // response
         return response([
             'id' => $account->id,
-            'balance' => '$' . number_format($account->balance(), 2),
+            'balance' => '$' . number_format($account->balance, 2),
         ], 200);
     }
 
