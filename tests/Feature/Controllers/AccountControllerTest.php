@@ -171,30 +171,21 @@ class AccountControllerTest extends TestCase
     {
         $user = factory(\App\User::class)->create();
         $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit");
-
-        $response->assertStatus(400);
-        $response->assertJson(['message' => 'Invalid amount']);
+        $this->post("/users/{$user->id}/accounts/{$account->id}/deposit")->assertStatus(400);
     }
 
     public function testAccountDepositWithAmountIsNaN()
     {
         $user = factory(\App\User::class)->create();
         $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 'abc']);
-
-        $response->assertStatus(400);
-        $response->assertJson(['message' => 'amount must be a number']);
+        $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => 'abc'])->assertStatus(400);
     }
 
     public function testAccountDepositWithAmountIsLessThanZero()
     {
         $user = factory(\App\User::class)->create();
         $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
-        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => -1.23]);
-
-        $response->assertStatus(400);
-        $response->assertJson(['message' => 'amount must greater than 0.01']);
+        $this->post("/users/{$user->id}/accounts/{$account->id}/deposit", ['amount' => -1.23])->assertStatus(400);
     }
 
     public function testAccountDepositWithUserNotFound()

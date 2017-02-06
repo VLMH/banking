@@ -74,17 +74,9 @@ class AccountController extends Controller
     public function deposit(Request $req, User $user, Account $account)
     {
         // validation
-        $validationRules = [
-            'amount' => 'required|numeric|min:0.01',
-        ];
-        $errorMessages = [
-            'required' => 'Invalid :attribute',
-            'numeric'  => ':attribute must be a number',
-            'min'      => ':attribute must greater than :min'
-        ];
-        $validator = Validator::make($req->all(), $validationRules, $errorMessages);
+        $validator = Validator::make($req->all(), ['amount' => 'required|numeric|min:0.01']);
         if ($validator->fails()) {
-            return response(['message' => $validator->errors()->first('amount')], 400);
+            abort(400);
         }
 
         $account->deposit($req->amount)->save();
