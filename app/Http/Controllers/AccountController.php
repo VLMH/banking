@@ -40,6 +40,8 @@ class AccountController extends Controller
         return response([
             'id' => $account->id,
             'balance' => '$' . number_format($account->balance, 2),
+            'transfer_quota' => '$' . number_format($account->transfer_quota, 2),
+            'last_transfered_at' => $account->last_transfered_at ? $account->last_transfered_at->toDateTimeString() : null,
         ], 200);
     }
 
