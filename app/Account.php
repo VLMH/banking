@@ -10,7 +10,7 @@ class Account extends Model
     use SoftDeletes;
 
     const CURRENCY_MINOR_UNIT = 100;
-    const TRANSFER_SERVICE_FEE = 100;
+    const TRANSFER_SERVICE_FEE = 100; // in currency unit
 
     protected $table = 'account';
 
