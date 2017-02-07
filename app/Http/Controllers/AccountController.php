@@ -9,9 +9,18 @@ use Validator;
 
 use App\User;
 use App\Account;
+use App\ApprovalService;
 
 class AccountController extends Controller
 {
+
+    protected $approvalService;
+
+    public function __construct()
+    {
+        $this->approvalService = new ApprovalService();
+    }
+
     /**
      * GET /users/{user}/accounts
      * List out accounts of a user
@@ -136,6 +145,10 @@ class AccountController extends Controller
 
         if (!$account->canWithdraw($req->amount + $serviceCharge)) {
             return response()->json(['message' => 'Not enough balance'], 400);
+        }
+
+        if (!$this->approvalService->canTransfer()) {
+            return response()->json(['message' => 'Rejected'], 400);
         }
 
         $this->doTransfer($account, $targetAccount, $req->amount, $serviceCharge);
