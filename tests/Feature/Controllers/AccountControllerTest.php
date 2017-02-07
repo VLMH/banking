@@ -241,7 +241,9 @@ class AccountControllerTest extends TestCase
         $response = $this->post("/users/{$user->id}/accounts/{$account->id}/transfer", ['targetAccountId' => $targetAccount->id, 'amount' => 50.00]);
 
         $response->assertStatus(200);
-        $this->assertEquals(50.00, $account->fresh()->balance);
+        $account = $account->fresh();
+        $this->assertEquals(50.00, $account->balance);
+        $this->assertEquals(9950.00, $account->transfer_quota);
         $this->assertEquals(150.00, $targetAccount->fresh()->balance);
     }
 

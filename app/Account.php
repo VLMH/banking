@@ -71,6 +71,17 @@ class Account extends Model
         return $this->transfer_quota >= $amount;
     }
 
+    public function withdrawByTransfer($amount, $serviceCharge)
+    {
+        if (!$this->isEnoughTransferQuota($amount)){
+            throw new \Exception('Not enough quota');
+        }
+
+        $this->attributes['transfer_quota'] = $this->toMinorUnit($this->transfer_quota - $amount);
+        $this->last_transfered_at = Carbon::now();
+        return $this->withdraw($amount + $serviceCharge);
+    }
+
     private function toMinorUnit($number)
     {
         return (int)floor($number * self::CURRENCY_MINOR_UNIT);

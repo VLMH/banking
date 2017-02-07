@@ -153,7 +153,7 @@ class AccountController extends Controller
     private function doTransfer(Account $transferer, Account $transferee, $amount, $serviceCharge)
     {
         DB::transaction(function() use ($transferer, $transferee, $amount, $serviceCharge) {
-            $transferer->withdraw($amount + $serviceCharge)->save();
+            $transferer->withdrawByTransfer($amount, $serviceCharge)->save();
             $transferee->deposit($amount)->save();
         });
     }

@@ -97,4 +97,24 @@ class AccountTest extends TestCase
         ]);
         $this->assertEquals(10000, $account->transfer_quota);
     }
+
+    public function testWithdrawByTransfer()
+    {
+        $account = factory(Account::class)->make([])->withdrawByTransfer(50, 0);
+        $this->assertEquals(50.00, $account->balance);
+        $this->assertEquals(9950.00, $account->transfer_quota);
+        $this->assertTrue($account->last_transfered_at->gte(Carbon::today()));
+    }
+
+    public function testWithdrawByTransferWithQuotaUsed()
+    {
+        $account = factory(Account::class)->make([
+            'transfer_quota' => 10000,
+            'last_transfered_at' => Carbon::now(),
+        ])->withdrawByTransfer(50, 0);
+
+        $this->assertEquals(50.00, $account->balance);
+        $this->assertEquals(50.00, $account->transfer_quota);
+        $this->assertTrue($account->last_transfered_at->gte(Carbon::today()));
+    }
 }
