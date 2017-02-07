@@ -121,6 +121,10 @@ class AccountController extends Controller
             abort(400);
         }
 
+        if (!$account->isEnoughTransferQuota($req->amount)) {
+            return response()->json(['message' => 'Exceed daily transfer limit'], 400);
+        }
+
         $targetAccount = $this->findAccount($req->targetAccountId);
         $serviceCharge = $this->getTransferServiceCharge($account, $targetAccount);
 

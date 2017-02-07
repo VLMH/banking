@@ -16,6 +16,12 @@ class Account extends Model
 
     protected $table = 'account';
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'last_transfered_at',
+    ];
+
     public function user()
     {
         return $this->belongsTo('App\User');
@@ -28,7 +34,7 @@ class Account extends Model
 
     public function getTransferQuotaAttribute()
     {
-        $transferedAt = $this->attributes['last_transfered_at'];
+        $transferedAt = $this->last_transfered_at;
 
         return ($transferedAt && $transferedAt->gte(Carbon::today()))
         ? $this->toCurrencyUnit($this->attributes['transfer_quota'])

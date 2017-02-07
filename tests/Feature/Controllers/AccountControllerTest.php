@@ -259,6 +259,21 @@ class AccountControllerTest extends TestCase
         $this->assertEquals(150.00, $targetAccount->fresh()->balance);
     }
 
+    public function testAccountTransferWithExceedLimit()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create([
+            'user_id' => $user->id,
+            'transfer_quota' => 0,
+            'last_transfered_at' => \Carbon\Carbon::now(),
+        ]);
+
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/transfer", ['targetAccountId' => 1, 'amount' => 50.00]);
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'Exceed daily transfer limit']);
+    }
+
     public function testAccountTransferWithUserNotFound()
     {
         $this->post("/users/999/accounts/999/transfer")->assertStatus(404);
