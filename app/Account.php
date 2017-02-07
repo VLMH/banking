@@ -43,6 +43,11 @@ class Account extends Model
         return $this->deposit(-$amount);
     }
 
+    public function isSameOwner(Account $account)
+    {
+        return $this->user_id == $account->user_id;
+    }
+
     private function toMinorUnit($number)
     {
         return (int)floor($number * self::CURRENCY_MINOR_UNIT);

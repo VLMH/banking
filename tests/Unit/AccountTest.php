@@ -44,4 +44,18 @@ class AccountTest extends TestCase
         $this->expectException(\Exception::class);
         factory(Account::class)->make()->withdraw(200);
     }
+
+    public function testIsSameOwner()
+    {
+        $account = factory(Account::class)->make();
+        $anotherAccount = factory(Account::class)->make();
+        $this->assertTrue($account->isSameOwner($anotherAccount));
+    }
+
+    public function testIsSameOwnerWithDiffOwner()
+    {
+        $account = factory(Account::class)->make();
+        $anotherAccount = factory(Account::class)->make(['user_id' => 2]);
+        $this->assertFalse($account->isSameOwner($anotherAccount));
+    }
 }
