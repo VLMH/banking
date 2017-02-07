@@ -60,6 +60,11 @@ class Account extends Model
         return $this->user_id == $account->user_id;
     }
 
+    public function isEnoughTransferQuota($amount)
+    {
+        return $this->transfer_quota >= $amount;
+    }
+
     private function toMinorUnit($number)
     {
         return (int)floor($number * self::CURRENCY_MINOR_UNIT);
