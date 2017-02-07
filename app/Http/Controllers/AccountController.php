@@ -126,6 +126,10 @@ class AccountController extends Controller
         }
 
         $targetAccount = $this->findAccount($req->targetAccountId);
+        if ($account->id == $targetAccount->id) {
+            return response()->json(['message' => 'Cannot transfer to same account'], 400);
+        }
+
         $serviceCharge = $this->getTransferServiceCharge($account, $targetAccount);
 
         if (!$account->canWithdraw($req->amount + $serviceCharge)) {

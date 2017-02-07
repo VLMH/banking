@@ -274,6 +274,17 @@ class AccountControllerTest extends TestCase
         $response->assertJson(['message' => 'Exceed daily transfer limit']);
     }
 
+    public function testAccountTransferToSameAccount()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/transfer", ['targetAccountId' => $account->id, 'amount' => 50.00]);
+
+        $response->assertStatus(400);
+        $response->assertJson(['message' => 'Cannot transfer to same account']);
+    }
+
     public function testAccountTransferWithUserNotFound()
     {
         $this->post("/users/999/accounts/999/transfer")->assertStatus(404);
