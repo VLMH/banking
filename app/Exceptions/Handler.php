@@ -44,6 +44,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+            return response()->json(null, $exception->getStatusCode());
+        }
+
         return parent::render($request, $exception);
     }
 
