@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Carbon\Carbon;
 
 use App\Account;
 
@@ -57,5 +58,40 @@ class AccountTest extends TestCase
         $account = factory(Account::class)->make();
         $anotherAccount = factory(Account::class)->make(['user_id' => 2]);
         $this->assertFalse($account->isSameOwner($anotherAccount));
+    }
+
+    // public function testIsEnoughTransferQuota()
+    // {
+    //     $account = factory(Account::class)->make();
+    //     $this->assertTrue($account->isEnoughTransferQuota(100));
+    // }
+
+    // public function testIsEnoughTransferQuotaWithExceedLimit()
+    // {
+    //     $account = factory(Account::class)->make(['transfer_quota' => 0]);
+    //     $this->assertFalse($account->isEnoughTransferQuota(100));
+    // }
+
+    public function testGetTransferQuotaAttribute()
+    {
+        $this->assertEquals(10000, factory(Account::class)->make()->transfer_quota);
+    }
+
+    public function testGetTransferQuotaAttributeWithTransferedToday()
+    {
+        $account = factory(Account::class)->make([
+            'transfer_quota' => 10000,
+            'last_transfered_at' => Carbon::now(),
+        ]);
+        $this->assertEquals(100, $account->transfer_quota);
+    }
+
+    public function testGetTransferQuotaAttributeWithTransferedYesterday()
+    {
+        $account = factory(Account::class)->make([
+            'transfer_quota' => 10000,
+            'last_transfered_at' => Carbon::now()->subDay(),
+        ]);
+        $this->assertEquals(10000, $account->transfer_quota);
     }
 }

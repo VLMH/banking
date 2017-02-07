@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class Account extends Model
 {
@@ -11,6 +12,7 @@ class Account extends Model
 
     const CURRENCY_MINOR_UNIT = 100;
     const TRANSFER_SERVICE_FEE = 100; // in currency unit
+    const DAILY_TRANSFER_LIMIT = 10000; // in currency unit
 
     protected $table = 'account';
 
@@ -22,6 +24,15 @@ class Account extends Model
     public function getBalanceAttribute()
     {
         return $this->toCurrencyUnit($this->attributes['balance']);
+    }
+
+    public function getTransferQuotaAttribute()
+    {
+        $transferedAt = $this->attributes['last_transfered_at'];
+
+        return ($transferedAt && $transferedAt->gte(Carbon::today()))
+        ? $this->toCurrencyUnit($this->attributes['transfer_quota'])
+        : self::DAILY_TRANSFER_LIMIT;
     }
 
     public function deposit($amount)
