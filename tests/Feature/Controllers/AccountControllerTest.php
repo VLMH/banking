@@ -245,6 +245,20 @@ class AccountControllerTest extends TestCase
         $this->assertEquals(150.00, $targetAccount->fresh()->balance);
     }
 
+    public function testAccountTransferToAccountOfDiffOwner()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id, 'balance' => 50000]);
+        $anotherUser = factory(\App\User::class)->create();
+        $targetAccount = factory(\App\Account::class)->create(['user_id' => $anotherUser->id]);
+
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/transfer", ['targetAccountId' => $targetAccount->id, 'amount' => 50.00]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(350.00, $account->fresh()->balance);
+        $this->assertEquals(150.00, $targetAccount->fresh()->balance);
+    }
+
     public function testAccountTransferWithUserNotFound()
     {
         $this->post("/users/999/accounts/999/transfer")->assertStatus(404);

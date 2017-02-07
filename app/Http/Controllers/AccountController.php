@@ -122,13 +122,13 @@ class AccountController extends Controller
         }
 
         $targetAccount = $this->findAccount($req->targetAccountId);
-        if ($account->isSameOwner($targetAccount)) {
-            if (!$account->canWithdraw($req->amount)) {
-                return response()->json(['message' => 'Not enough balance'], 400);
-            }
+        $serviceCharge = $this->getTransferServiceCharge($account, $targetAccount);
 
-            $this->doTransfer($account, $targetAccount, $req->amount);
+        if (!$account->canWithdraw($req->amount + $serviceCharge)) {
+            return response()->json(['message' => 'Not enough balance'], 400);
         }
+
+        $this->doTransfer($account, $targetAccount, $req->amount, $serviceCharge);
 
         return response(null, 200);
     }
@@ -142,11 +142,16 @@ class AccountController extends Controller
         return $account;
     }
 
-    private function doTransfer(Account $transferer, Account $transferee, $amount)
+    private function doTransfer(Account $transferer, Account $transferee, $amount, $serviceCharge)
     {
-        DB::transaction(function() use ($transferer, $transferee, $amount) {
-            $transferer->withdraw($amount)->save();
+        DB::transaction(function() use ($transferer, $transferee, $amount, $serviceCharge) {
+            $transferer->withdraw($amount + $serviceCharge)->save();
             $transferee->deposit($amount)->save();
         });
+    }
+
+    private function getTransferServiceCharge(Account $transferer, Account $transferee)
+    {
+        return $transferer->isSameOwner($transferee) ? 0 : Account::TRANSFER_SERVICE_FEE;
     }
 }
