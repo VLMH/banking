@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
@@ -103,5 +104,49 @@ class AccountController extends Controller
         $account->withdraw($req->amount)->save();
 
         return response(null, 200);
+    }
+
+    /**
+     * POST /users/{userId}/accounts/{accountId}/transfer
+     * Account transfer amount to another account
+     */
+    public function transfer(Request $req, User $user, Account $account)
+    {
+        // validation
+        $validator = Validator::make($req->all(), [
+            'targetAccountId' => 'required|integer',
+            'amount' => 'required|numeric|min:0.01'
+        ]);
+        if ($validator->fails()) {
+            abort(400);
+        }
+
+        $targetAccount = $this->findAccount($req->targetAccountId);
+        if ($account->isSameOwner($targetAccount)) {
+            if (!$account->canWithdraw($req->amount)) {
+                return response()->json(['message' => 'Not enough balance'], 400);
+            }
+
+            $this->doTransfer($account, $targetAccount, $req->amount);
+        }
+
+        return response(null, 200);
+    }
+
+    private function findAccount($accountId)
+    {
+        if (!$account = Account::find($accountId)) {
+            abort(400);
+        }
+
+        return $account;
+    }
+
+    private function doTransfer(Account $transferer, Account $transferee, $amount)
+    {
+        DB::transaction(function() use ($transferer, $transferee, $amount) {
+            $transferer->withdraw($amount)->save();
+            $transferee->deposit($amount)->save();
+        });
     }
 }

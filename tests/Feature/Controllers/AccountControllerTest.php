@@ -229,4 +229,30 @@ class AccountControllerTest extends TestCase
         $user = factory(\App\User::class)->create();
         $this->post("/users/{$user->id}/accounts/999/withdraw", ['amount' => 100.00])->assertStatus(404);
     }
+
+    // === POST /users/{id}/accounts/{accountId}/transfer
+
+    public function testAccountTransferToAccountOfSameOwner()
+    {
+        $user = factory(\App\User::class)->create();
+        $account = factory(\App\Account::class)->create(['user_id' => $user->id]);
+        $targetAccount = factory(\App\Account::class)->create(['user_id' => $user->id]);
+
+        $response = $this->post("/users/{$user->id}/accounts/{$account->id}/transfer", ['targetAccountId' => $targetAccount->id, 'amount' => 50.00]);
+
+        $response->assertStatus(200);
+        $this->assertEquals(50.00, $account->fresh()->balance);
+        $this->assertEquals(150.00, $targetAccount->fresh()->balance);
+    }
+
+    public function testAccountTransferWithUserNotFound()
+    {
+        $this->post("/users/999/accounts/999/transfer")->assertStatus(404);
+    }
+
+    public function testAccountTransferWithAccountNotFound()
+    {
+        $user = factory(\App\User::class)->create();
+        $this->post("/users/{$user->id}/accounts/999/transfer")->assertStatus(404);
+    }
 }
